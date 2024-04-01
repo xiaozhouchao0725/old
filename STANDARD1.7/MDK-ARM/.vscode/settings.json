@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "referee.h": "c",
+        "gimbal_task.h": "c",
+        "vision_task.h": "c",
+        "remote_control.h": "c"
+    }
+}
