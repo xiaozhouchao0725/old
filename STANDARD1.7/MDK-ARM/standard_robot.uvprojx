@@ -881,6 +881,11 @@
               <FilePath>..\application\shoot_task.c</FilePath>
             </File>
             <File>
+              <FileName>referee_usart_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\referee_usart_task.c</FilePath>
+            </File>
+            <File>
               <FileName>voltage_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\voltage_task.c</FilePath>
@@ -889,11 +894,6 @@
               <FileName>usb_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\usb_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>referee_usart_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\referee_usart_task.c</FilePath>
             </File>
             <File>
               <FileName>led_flow_task.c</FileName>

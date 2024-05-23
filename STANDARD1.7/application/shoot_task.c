@@ -97,7 +97,7 @@ void shoot_task(void const *pvParameters)
             }
             else
             {
-				CAN_cmd_shoot(left_can_set_current,right_can_set_current,trigger_can_set_current,0);
+				CAN_cmd_shoot(right_can_set_current,left_can_set_current,trigger_can_set_current,0);
             }
 //        }
 				vTaskDelay(SHOOT_CONTROL_TIME_MS);
@@ -280,11 +280,11 @@ int s=2000,l;
 		
 		if(ET)
 		{
-			trigger_set = 18.0f;
+			trigger_set = -18.0f;
 			shoot_control.heat_limit -= 10;
 		}
 		else if(!ET)
-			trigger_set = 12.0f;
+			trigger_set = -12.0f;
 
 //				if(robot_state.shooter_barrel_heat_limit - power_heat_data_t.shooter_id1_17mm_cooling_heat <= 40)
 //					trigger_set = -9.0f;

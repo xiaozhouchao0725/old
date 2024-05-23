@@ -24,14 +24,14 @@
 #include "struct_typedef.h"
 
 #define CHASSIS_CAN hcan1
-#define GIMBAL_CAN 	hcan1
+#define GIMBAL_CAN 	hcan2
 #define SHOOT_CAN 	hcan2
 #define CAP_CAN		hcan1
 
 
-#define CAN_FEEDBACK_FREAM_ID_A       0x11
-#define CAN_FEEDBACK_FREAM_ID_B       0x12
-#define CAN_CTRL_FREAM_ID             0x21        //CAN帧ID号
+#define CAN_FEEDBACK_FREAM_ID_A       0x211
+#define CAN_FEEDBACK_FREAM_ID_B       0x212
+#define CAN_CTRL_FREAM_ID             0x210        //CAN帧ID号
 
 /* CAN send and receive ID */
 typedef enum
@@ -42,16 +42,16 @@ typedef enum
     CAN_3508_M3_ID = 0x203,
     CAN_3508_M4_ID = 0x204,
 	
-		CAN_GIMBAL_ALL_ID = 0x1FF,
+	CAN_GIMBAL_ALL_ID = 0x1FF,
     CAN_YAW_MOTOR_ID = 0x205,
     CAN_PIT_MOTOR_ID = 0x206,
 	
-		CAN_SHOOT_ALL_ID = 0x1FF,
-	CAN_3508_LEFT_ID = 0x205,
-		CAN_3508_RIGHT_ID = 0x206,
-		CAN_TRIGGER_MOTOR_ID = 0x207,
+	CAN_SHOOT_ALL_ID = 0x200,
+	CAN_3508_RIGHT_ID = 0x201,
+	CAN_3508_LEFT_ID = 0x202,
+	CAN_TRIGGER_MOTOR_ID = 0x203,
 	
-		CAP_ID = 0x211,
+//		CAP_ID = 0x211,
     
 } can_msg_id_e;
 
@@ -123,8 +123,8 @@ typedef struct
 }can_control_typedef;  //CAN控制数据
 
 extern cap_measure_t get_cap;
-//extern can_feedback_a_typedef get_capA;
-//extern can_feedback_b_typedef get_capB;
+extern can_feedback_a_typedef get_capA;
+extern can_feedback_b_typedef get_capB;
 /**
   * @brief          发送电机控制电流(0x205,0x206,0x207,0x208)
   * @param[in]      yaw: (0x205) 6020电机控制电流, 范围 [-30000,30000]
@@ -163,7 +163,7 @@ extern void CAN_cmd_chassis(int16_t motor1, int16_t motor2, int16_t motor3, int1
 extern void CAN_cmd_shoot(int16_t s0, int16_t s1, int16_t s2, int16_t trigger);
 
 
-extern void CAN_cmd_cap(int16_t temPower);
+extern void CAN_cmd_cap(uint16_t temPower);
 /**
   * @brief          返回yaw 6020电机数据指针
   * @param[in]      none

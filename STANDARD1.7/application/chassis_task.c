@@ -135,7 +135,7 @@ void chassis_task(void const *pvParameters)
         if (!(toe_is_error(CHASSIS_MOTOR1_TOE) && toe_is_error(CHASSIS_MOTOR2_TOE) && toe_is_error(CHASSIS_MOTOR3_TOE) && toe_is_error(CHASSIS_MOTOR4_TOE)))
         {
             //当遥控器掉线的时候，发送给底盘电机零电流.
-            if (toe_is_error(DBUS_TOE))
+            if (toe_is_error(DBUS_TOE)||robot_state.power_management_chassis_output==0)
             {
                 CAN_cmd_chassis(0, 0, 0, 0);
             }
@@ -504,12 +504,14 @@ static void chassis_set_contorl(chassis_move_t *chassis_move_control)
 static void chassis_vector_to_mecanum_wheel_speed(const fp32 vx_set, const fp32 vy_set, const fp32 wz_set, fp32 wheel_speed[4])
 {
     //旋转的时候， 由于云台靠前，所以是前面两轮 0 ，1 旋转的速度变慢， 后面两轮 2,3 旋转的速度变快
-	  wheel_speed[0] = -vx_set + vy_set + (CHASSIS_WZ_SET_SCALE - 1.00f) * MOTOR_DISTANCE_TO_CENTER * wz_set;
-    wheel_speed[1] = vx_set + vy_set + (CHASSIS_WZ_SET_SCALE - 1.00f) * MOTOR_DISTANCE_TO_CENTER * wz_set;
-    wheel_speed[2] = vx_set - vy_set + (-CHASSIS_WZ_SET_SCALE - 1.00f) * MOTOR_DISTANCE_TO_CENTER * wz_set;
-    wheel_speed[3] = -vx_set - vy_set + (-CHASSIS_WZ_SET_SCALE - 1.00f) * MOTOR_DISTANCE_TO_CENTER * wz_set;
+	wheel_speed[0] = vx_set - vy_set + (CHASSIS_WZ_SET_SCALE - 1.00f) * MOTOR_DISTANCE_TO_CENTER * wz_set;
+    wheel_speed[1] = -vx_set - vy_set + (CHASSIS_WZ_SET_SCALE - 1.00f) * MOTOR_DISTANCE_TO_CENTER * wz_set;
+    wheel_speed[2] = -vx_set + vy_set + (-CHASSIS_WZ_SET_SCALE - 1.00f) * MOTOR_DISTANCE_TO_CENTER * wz_set;
+    wheel_speed[3] = vx_set + vy_set + (-CHASSIS_WZ_SET_SCALE - 1.00f) * MOTOR_DISTANCE_TO_CENTER * wz_set;
 }
 
+
+uint8_t cap_send_tmp=0;
 
 /**
   * @brief          控制循环，根据控制设定值，计算电机电流值，进行控制
@@ -534,6 +536,14 @@ static void chassis_control_loop(chassis_move_t *chassis_move_control_loop)
     //麦轮运动分解
     chassis_vector_to_mecanum_wheel_speed(chassis_move_control_loop->vx_set,
                                           chassis_move_control_loop->vy_set, chassis_move_control_loop->wz_set, wheel_speed);
+
+	static int16_t last_key_Ctrl = 0;
+	if(!last_key_Ctrl&&chassis_move_control_loop->chassis_RC->key.v & KEY_PRESSED_OFFSET_CTRL)
+	{
+		feipo=!feipo;
+	}	
+	last_key_Ctrl = chassis_move_control_loop->chassis_RC->key.v & KEY_PRESSED_OFFSET_CTRL;
+
     if (chassis_move_control_loop->chassis_mode == CHASSIS_VECTOR_RAW)
     {
         
@@ -581,7 +591,7 @@ static void chassis_control_loop(chassis_move_t *chassis_move_control_loop)
 	}	
 	last_key_F = chassis_move_control_loop->chassis_RC->key.v & KEY_PRESSED_OFFSET_F;
 			
-	if((get_cap.capvot/100) < 18.0)
+	if((get_capA.cap_voltage/1000) < 18.0)
 		FCHO=0;
 	
 	
@@ -595,33 +605,54 @@ static void chassis_control_loop(chassis_move_t *chassis_move_control_loop)
 	chassis_move_control_loop->power_control.POWER_MAX = 0; //最终底盘的最大功率
 	chassis_move_control_loop->power_control.forecast_total_power = 0; // 预测总功率
 	
-	PID_calc(&chassis_move_control_loop->buffer_pid, chassis_move_control_loop->chassis_power_buffer,30); //使缓冲能量维持在一个稳定的范围,这里的PID没必要移植我的，用任意一个就行
+	PID_calc(&chassis_move_control_loop->buffer_pid, chassis_move_control_loop->chassis_power_buffer,35); //使缓冲能量维持在一个稳定的范围,这里的PID没必要移植我的，用任意一个就行
 
 	max_power_limit = chassis_move_control_loop->chassis_power_MAX;  //获得裁判系统的功率限制数值
 	
 	input_power = max_power_limit - chassis_move_control_loop->buffer_pid.out; //通过裁判系统的最大功率
 	
-	chassis_move_control_loop->power_control.power_charge = input_power*100; //超级电容的最大充电功率
+	chassis_move_control_loop->power_control.power_charge = input_power; //超级电容的最大充电功率
 	
-	if(chassis_move_control_loop->power_control.power_charge>10000)		chassis_move_control_loop->power_control.power_charge =10000; //参考超电控制板允许的最大充电功率，溪地板子的新老不一样
+	if(chassis_move_control_loop->power_control.power_charge>100)		chassis_move_control_loop->power_control.power_charge =100; //参考超电控制板允许的最大充电功率，溪地板子的新老不一样
 	
-	CAN_cmd_cap(chassis_move_control_loop->power_control.power_charge); // 设置超电的充电功率
+	if(chassis_move_control_loop->power_control.power_charge<30)		chassis_move_control_loop->power_control.power_charge =30;
 
-	if (get_cap.capvot/100 > 16) //当超电电压大于某个值(防止C620掉电)
+	
+	if(cap_send_tmp % 50 == 0)
+		CAN_cmd_cap(chassis_move_control_loop->power_control.power_charge); // 设置超电的充电功率
+	cap_send_tmp++;
+
+	if (get_capA.cap_voltage/1000 > 16) //当超电电压大于某个值(防止C620掉电)
 	{
 		if (FCHO)   //主动超电，一般用于起步加速or冲刺or飞坡or上坡，chassis_move.key_C为此代码中超电开启按键
 		{
-			chassis_move_control_loop->power_control.POWER_MAX = 150;		
+			if(feipo)
+			chassis_move_control_loop->power_control.POWER_MAX = 275;
+			else if(robot_state.robot_level < 5)
+			chassis_move_control_loop->power_control.POWER_MAX = 90;
+			else if(robot_state.robot_level > 4 && robot_state.robot_level < 8)
+			chassis_move_control_loop->power_control.POWER_MAX = 110;
+			else
+			chassis_move_control_loop->power_control.POWER_MAX = 140;		
 		}
 		else
 		{
-			chassis_move_control_loop->power_control.POWER_MAX = input_power + 5;  //被动超电，相对以往能跑得更快点
-			if((get_cap.capvot/100) < 20.0)
+			if(robot_state.robot_level < 5)
+			{
+			chassis_move_control_loop->power_control.POWER_MAX = input_power + 15;	
+				if((get_capA.cap_voltage/1000) < 17.0)
+				chassis_move_control_loop->power_control.POWER_MAX = input_power;
+			}
+			else
+			{
+			chassis_move_control_loop->power_control.POWER_MAX = input_power + 5;
+			if((get_capA.cap_voltage/1000) < 20.0)
 			chassis_move_control_loop->power_control.POWER_MAX = input_power + 2;
-			if((get_cap.capvot/100) < 19.0)
+			if((get_capA.cap_voltage/1000) < 19.0)
 			chassis_move_control_loop->power_control.POWER_MAX = input_power + 1;
-			if((get_cap.capvot/100) < 18.0)
+			if((get_capA.cap_voltage/1000) < 18.0)
 			chassis_move_control_loop->power_control.POWER_MAX = input_power;
+			}
 		}
 	}
 	else
@@ -640,6 +671,14 @@ static void chassis_control_loop(chassis_move_t *chassis_move_control_loop)
 		
 		chassis_move_control_loop->power_control.forecast_total_power += chassis_move_control_loop->power_control.forecast_motor_power[i];
 	}
+	
+	if(feipo)//飞坡模式，前两轮分配功率少于后两轮，比例可调
+    {
+	    chassis_move_control_loop->power_control.forecast_motor_power[0] = (chassis_move_control_loop->power_control.forecast_total_power/10)*1.5f;
+	    chassis_move_control_loop->power_control.forecast_motor_power[1] = (chassis_move_control_loop->power_control.forecast_total_power/10)*1.5f;
+	    chassis_move_control_loop->power_control.forecast_motor_power[2] = (chassis_move_control_loop->power_control.forecast_total_power/10)*3.5f;
+	    chassis_move_control_loop->power_control.forecast_motor_power[3] = (chassis_move_control_loop->power_control.forecast_total_power/10)*3.5f;
+    }
 	
 	if (chassis_move_control_loop->power_control.forecast_total_power > chassis_move_control_loop->power_control.POWER_MAX) // 超功率模型衰减
 	{

@@ -45,13 +45,13 @@ void UI_task(void const *pvParameters)
 //			memset(&Aim[10],0,sizeof(Aim[10]));			//清空图形数据
 			Line_Draw(&Aim[0],"AL1",UI_Graph_ADD,5,UI_Color_Green,3,960,300,960,540);
 			Line_Draw(&Aim[1],"AL2",UI_Graph_ADD,5,UI_Color_Green,2,940,520,980,520);
-			Line_Draw(&Aim[2],"AL3",UI_Graph_ADD,5,UI_Color_Black,3,930,478,990,478);
+			Line_Draw(&Aim[2],"AL3",UI_Graph_ADD,5,UI_Color_Green,3,930,478,990,478);
 			Line_Draw(&Aim[3],"AL4",UI_Graph_ADD,5,UI_Color_Yellow,2,920,380,1000,380);
 			Line_Draw(&Aim[8],"AL9",UI_Graph_ADD,6,UI_Color_Purplish_red,2,920,330,1000,330);
 			//可通过宽度
 			Line_Draw(&Aim[4],"AL5",UI_Graph_ADD,6,UI_Color_Green,2,440,0,627,443);
 			Line_Draw(&Aim[5],"AL6",UI_Graph_ADD,6,UI_Color_Green,2,1480,0,1293,443);
-			Line_Draw(&Aim[6],"AL7",UI_Graph_ADD,5,UI_Color_Orange,3,920,400,1000,400);
+			Line_Draw(&Aim[6],"AL7",UI_Graph_ADD,5,UI_Color_Green,3,960,300,960,540);
 			Line_Draw(&Aim[7],"AL8",UI_Graph_ADD,7,UI_Color_Purplish_red,10,1700,600,1700,700);
 			Line_Draw(&Aim[10],"AL11",UI_Graph_ADD,7,UI_Color_Cyan,0,1700,600,1800,600);
 			Circle_Draw(&Aim[9],"CL9",UI_Graph_ADD,5,UI_Color_Orange,5,1700,600,100);
@@ -93,13 +93,13 @@ void UI_task(void const *pvParameters)
 		{
 			Line_Draw(&Aim[0],"AL1",UI_Graph_ADD,5,UI_Color_Green,3,960,300,960,540);
 			Line_Draw(&Aim[1],"AL2",UI_Graph_ADD,5,UI_Color_Green,2,940,520,980,520);
-			Line_Draw(&Aim[2],"AL3",UI_Graph_ADD,5,UI_Color_Black,3,930,478,990,478);
+			Line_Draw(&Aim[2],"AL3",UI_Graph_ADD,5,UI_Color_Green,3,930,478,990,478);
 			Line_Draw(&Aim[3],"AL4",UI_Graph_ADD,5,UI_Color_Yellow,2,920,380,1000,380);
 			Line_Draw(&Aim[8],"AL9",UI_Graph_ADD,6,UI_Color_Purplish_red,2,920,430,1000,430);
 			//可通过宽度
 			Line_Draw(&Aim[4],"AL5",UI_Graph_ADD,6,UI_Color_Green,2,440,0,627,443);
 			Line_Draw(&Aim[5],"AL6",UI_Graph_ADD,6,UI_Color_Green,2,1480,0,1293,443);
-			Line_Draw(&Aim[6],"AL7",UI_Graph_ADD,5,UI_Color_Orange,3,920,400,1000,400);
+			Line_Draw(&Aim[6],"AL7",UI_Graph_ADD,5,UI_Color_Green,3,960,300,960,540);
 			Line_Draw(&Aim[7],"AL8",UI_Graph_ADD,7,UI_Color_Purplish_red,10,1700,600,1700,700);
 			Line_Draw(&Aim[10],"AL11",UI_Graph_ADD,7,UI_Color_Cyan,0,1700,600,1800,600);
 			Circle_Draw(&Aim[9],"CL9",UI_Graph_ADD,5,UI_Color_Orange,5,1700,600,100);
@@ -135,8 +135,8 @@ void UI_task(void const *pvParameters)
 			UI_ReFresh(5,Aim[7],Aim[9],Aim[8],Aim[10]);	
 		}
 	
-		sprintf(tmp1,"Cap:%.1f(%.2fV)",((get_cap.capvot/100.0-13.5)/10.5*100),get_cap.capvot/100.0);
-		if(get_cap.capvot > 1600.0f)
+		sprintf(tmp1,"Cap:%.1f(%.2fV)",((get_capA.cap_voltage/1000.0-13.5)/10.5*100),get_capA.cap_voltage/1000.0);
+		if(get_capA.cap_voltage > 16000.0f)
 				Char_Draw(&strCAP,"CAP",UI_Graph_Change,8,UI_Color_Green,20,strlen(tmp1),2,860,100,tmp1);
 		else
 				Char_Draw(&strCAP,"CAP",UI_Graph_Change,8,UI_Color_Orange,20,strlen(tmp1),2,860,100,tmp1);

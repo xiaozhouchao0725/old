@@ -62,3 +62,4 @@ standard_tpye_c\can_receive.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_
 standard_tpye_c\can_receive.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
 standard_tpye_c\can_receive.o: ..\bsp\boards\bsp_rng.h
 standard_tpye_c\can_receive.o: ..\application\detect_task.h
+standard_tpye_c\can_receive.o: ..\components\support\crc8_crc16.h

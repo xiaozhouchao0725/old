@@ -188,7 +188,7 @@
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>get_capA</ItemText>
+          <ItemText>get_capA,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
@@ -199,6 +199,11 @@
           <count>8</count>
           <WinNumber>1</WinNumber>
           <ItemText>BMI088</ItemText>
+        </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>robot_state,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -1426,8 +1431,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\application\voltage_task.c</PathWithFileName>
-      <FilenameWithoutPath>voltage_task.c</FilenameWithoutPath>
+      <PathWithFileName>..\application\referee_usart_task.c</PathWithFileName>
+      <FilenameWithoutPath>referee_usart_task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1438,8 +1443,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\application\usb_task.c</PathWithFileName>
-      <FilenameWithoutPath>usb_task.c</FilenameWithoutPath>
+      <PathWithFileName>..\application\voltage_task.c</PathWithFileName>
+      <FilenameWithoutPath>voltage_task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1450,8 +1455,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\application\referee_usart_task.c</PathWithFileName>
-      <FilenameWithoutPath>referee_usart_task.c</FilenameWithoutPath>
+      <PathWithFileName>..\application\usb_task.c</PathWithFileName>
+      <FilenameWithoutPath>usb_task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
